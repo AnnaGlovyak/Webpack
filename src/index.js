@@ -1,13 +1,14 @@
 import _ from 'lodash';
 import printMe from './print.js';
 import './style.css';
+import foto from './img/foto.jpg';
 
 import {header} from './components/header/header.js'
 import { footer } from './components/footer/footer';
 
 
 function component() {
-    const element = document.createElement('div');
+    const element = document.querySelector('div');
     const btn = document.createElement('button');
   
     // Lodash, currently included via a script, is required for this line to work
@@ -17,6 +18,12 @@ function component() {
     btn.onclick = printMe;
 
     element.appendChild(btn);
+
+
+    const myFoto = new Image();
+    myFoto.src = foto;
+
+    element.appendChild(myFoto);
   
     return element;
   }

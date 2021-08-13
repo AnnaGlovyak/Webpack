@@ -3,3 +3,6 @@ body, html {
     height: 100%;
     background-color: green;
 }
+img {
+    width: 300px;
+}

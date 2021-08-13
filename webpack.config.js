@@ -1,97 +1,74 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const ImageMinimizerPlugin = require("image-minimizer-webpack-plugin");
-const { extendDefaultPlugins } = require("svgo");
-
-const NODE_ENV = process.env.NODE_ENV || "development";
+const {CleanWebpackPlugin} = require('clean-webpack-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const isDev = process.env.NODE_ENV || "development";
+console.log('Is Dev: ', isDev)
 
 module.exports = {
-// mode: 'development',
+    context: path.resolve(__dirname, 'src'),
+mode: 'development',
 entry: {
-    index: './src/index.js',
-    print: './src/print.js',
+    index: './index.js',
+    print: './print.js',
     },
-// watch: NODE_ENV == 'development',
-devtool: NODE_ENV == 'development' ? 'inline-source-map' : null,
+devtool: isDev == 'development' ? 'inline-source-map' : null,
 devServer: {
     contentBase: './dist',
+    hot: isDev
     },
 plugins: [
     new HtmlWebpackPlugin({
-        title: 'Development',
-        template: './src/index.html',
-        collapseWhitespace: true
+        template: './index.html',
+        collapseWhitespace: true,
     }),
-    new ImageMinimizerPlugin({
-        minimizerOptions: {
-          // Lossless optimization with custom option
-          // Feel free to experiment with options for better result for you
-          plugins: [
-            ["gifsicle", { interlaced: true }],
-            ["jpegtran", { progressive: true }],
-            ["optipng", { optimizationLevel: 5 }],
-            // Svgo configuration here https://github.com/svg/svgo#configuration
-            [
-              "svgo",
-              {
-                plugins: extendDefaultPlugins([
-                  {
-                    name: "removeViewBox",
-                    active: false,
-                  },
-                  {
-                    name: "addAttributesToSVGElement",
-                    params: {
-                      attributes: [{ xmlns: "http://www.w3.org/2000/svg" }],
-                    },
-                  },
-                ]),
-              },
-            ],
-          ],
-        },
-      }),
+    new CleanWebpackPlugin(),
+    new CopyWebpackPlugin({
+      patterns: [
+        { from: path.resolve(__dirname, 'src/favicon.ico'), 
+        to: path.resolve(__dirname, "dist") },
+      ],
+    }),
+    new MiniCssExtractPlugin({
+      filename: '[name].[contenthash].css'
+    }),
 ],
 output: {
-    filename: '[name].bundle.js',
+    filename: '[name].[contenthash].js',  //'[name].bundle.js'
     path: path.resolve(__dirname, 'dist'),
     clean: true,
+},
+resolve: {
+  extensions: ['.js', '.json'],//можно не указывать такие разширения, при использовании файлов.Добавить можем любые
+  alias: {
+    '@components': path.resolve(__dirname, 'src/assets/components'),
+    '@': path.resolve(__dirname,'src')
+  }
 },
 module: {
     rules: [
         {
-            test: /\.css$/i,
-            use: [
-              "style-loader",
-              {
-                loader: "css-loader",
-                options: { importLoaders: 1 },
-              },
-              {
-                loader: "postcss-loader",
-                options: {
-                  postcssOptions: {
-                    plugins: [
-                      [
-                        "autoprefixer",
-                        {
-                          // Options
-                        },
-                      ],
-                    ],
-                  },
-                },
-              },
-            ],
+          test: /\.css$/i,
+          use: [
+            {
+              loader: MiniCssExtractPlugin.loader,
+              options: {
+                // hmr: isDev,     ///DON'T WORK
+                // reloadAll: true
+              }
+            }, "css-loader"],
         },
      
         {
-        test: /\.(png|svg|jpg|jpeg|gif)$/i,
+        test: /\.(png|svg|jpg|jpeg|gif)$/,
         type: 'asset/resource',
+        // use: ['file-loader']dont working////WHY?
         },
         {
-        test: /\.(woff|woff2|eot|ttf|otf)$/i,
+        test: /\.(woff|woff2|eot|ttf|otf)$/,
         type: 'asset/resource',
+        // use: ['file-loader']//dont working////WHY?
         },
     ],
     },

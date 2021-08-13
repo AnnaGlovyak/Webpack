@@ -1,10 +1,11 @@
 import _ from 'lodash';
-import printMe from './print.js';
-import './style.css';
-import foto from './img/foto.jpg';
+import printMe from './print';
+import json from './assets/jsonfail';
+import './styles/style.css';
+// import foto from './img/foto.jpg';
 
-import {header} from './components/header/header.js'
-import { footer } from './components/footer/footer';
+import {header} from '@components/header/header'
+import { footer } from '@components/footer/footer';
 
 
 function component() {
@@ -16,14 +17,13 @@ function component() {
 
     btn.innerHTML = 'Click me and check the console!';
     btn.onclick = printMe;
-
     element.appendChild(btn);
 
+    console.log(json);
+    // const myFoto = new Image();
+    // myFoto.src = foto;
 
-    const myFoto = new Image();
-    myFoto.src = foto;
-
-    element.appendChild(myFoto);
+    // element.appendChild(myFoto);
   
     return element;
   }
